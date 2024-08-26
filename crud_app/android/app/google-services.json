@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "904243952088",
+    "project_id": "crudapp-faba2",
+    "storage_bucket": "crudapp-faba2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:904243952088:android:86fcc3585ffbf01943daad",
+        "android_client_info": {
+          "package_name": "com.example.crud_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDvofBQnrkjyNksTFHZRbIH22HOcHBP72I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
