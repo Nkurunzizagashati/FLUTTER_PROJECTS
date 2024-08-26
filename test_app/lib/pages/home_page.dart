@@ -13,6 +13,20 @@ class HomePage extends StatelessWidget {
         backgroundColor: Colors.deepPurple,
         foregroundColor: Colors.white,
       ),
+      body: Column(
+        children: [
+          const Text("No task"),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pushNamed(context, '/task/create');
+            },
+            child: const Text(
+              "Create Task",
+            ),
+          )
+        ],
+      ),
     );
   }
 }

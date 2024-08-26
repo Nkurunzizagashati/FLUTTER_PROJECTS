@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class CreateTask extends StatefulWidget {
@@ -29,6 +28,10 @@ class _CreateTaskState extends State<CreateTask> {
               labelText: 'Task Name',
             ),
           ),
+          ElevatedButton(
+            child: const Text('CREATE TASK'),
+            onPressed: () {},
+          )
         ],
       ),
     );
