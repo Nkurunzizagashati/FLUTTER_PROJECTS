@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:test_app/pages/auth/register_page.dart';
 import 'package:test_app/pages/home_page.dart';
+import 'package:test_app/pages/task/create_task.dart';
 import 'package:test_app/pages/welcom_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -37,6 +38,7 @@ class MyApp extends StatelessWidget {
         '/': (context) => const HomePage(),
         '/register': (context) => const RegisterPage(),
         '/login': (context) => const WelcomPage(),
+        '/task/create': (context) => const CreateTask(),
       },
     );
   }
