@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crud_app/services/firestore.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +13,7 @@ class _HomePageState extends State<HomePage> {
   final FirestoreService firestoreServices = FirestoreService();
   final TextEditingController textEditingController = TextEditingController();
 
-  void openNoteBox() {
+  void openNoteBox({String? docID}) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -25,7 +23,11 @@ class _HomePageState extends State<HomePage> {
         actions: [
           ElevatedButton(
             onPressed: () {
-              firestoreServices.addNote(textEditingController.text);
+              if (docID != null) {
+                firestoreServices.updateNote(docID, textEditingController.text);
+              } else {
+                firestoreServices.addNote(textEditingController.text);
+              }
               textEditingController.clear();
               Navigator.pop(context);
             },
@@ -58,6 +60,7 @@ class _HomePageState extends State<HomePage> {
               return ListView.builder(
                 itemBuilder: (context, index) {
                   DocumentSnapshot document = notesList[index];
+                  String docID = document.id;
 
                   Map<String, dynamic> data =
                       document.data() as Map<String, dynamic>;
@@ -65,6 +68,12 @@ class _HomePageState extends State<HomePage> {
 
                   return ListTile(
                     title: Text(noteText),
+                    trailing: IconButton(
+                      onPressed: () {
+                        openNoteBox(docID: docID);
+                      },
+                      icon: const Icon(Icons.settings),
+                    ),
                   );
                 },
                 itemCount: notesList.length,
