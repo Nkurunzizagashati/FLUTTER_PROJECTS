@@ -1,3 +1,4 @@
+import 'package:crud_app/services/firestore.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -8,11 +9,24 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final FirestoreService firestoreServices = FirestoreService();
+  final TextEditingController textEditingController = TextEditingController();
+
   void openNoteBox() {
     showDialog(
       context: context,
-      builder: (context) => const AlertDialog(
-        content: TextField(),
+      builder: (context) => AlertDialog(
+        content: TextField(
+          controller: textEditingController,
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () async {
+              await firestoreServices.addNote(textEditingController.text);
+            },
+            child: const Text("Add"),
+          )
+        ],
       ),
     );
   }
