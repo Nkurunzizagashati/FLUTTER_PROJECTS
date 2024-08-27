@@ -1,3 +1,6 @@
+import 'dart:ffi';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crud_app/services/firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -21,8 +24,10 @@ class _HomePageState extends State<HomePage> {
         ),
         actions: [
           ElevatedButton(
-            onPressed: () async {
-              await firestoreServices.addNote(textEditingController.text);
+            onPressed: () {
+              firestoreServices.addNote(textEditingController.text);
+              textEditingController.clear();
+              Navigator.pop(context);
             },
             child: const Text("Add"),
           )
@@ -44,6 +49,30 @@ class _HomePageState extends State<HomePage> {
         onPressed: openNoteBox,
         child: const Icon(Icons.add),
       ),
+      body: StreamBuilder(
+          stream: firestoreServices.getNotesStream(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              List notesList = snapshot.data!.docs;
+
+              return ListView.builder(
+                itemBuilder: (context, index) {
+                  DocumentSnapshot document = notesList[index];
+
+                  Map<String, dynamic> data =
+                      document.data() as Map<String, dynamic>;
+                  String noteText = data['note'];
+
+                  return ListTile(
+                    title: Text(noteText),
+                  );
+                },
+                itemCount: notesList.length,
+              );
+            } else {
+              return const Text("No notes");
+            }
+          }),
     );
   }
 }
