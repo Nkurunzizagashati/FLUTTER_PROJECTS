@@ -36,4 +36,9 @@ class AuthServices {
 
     return userNames;
   }
+
+  Future<String?> getCurrentUserEmail() async {
+    final currentUserEmail = FirebaseAuth.instance.currentUser?.email;
+    return currentUserEmail;
+  }
 }

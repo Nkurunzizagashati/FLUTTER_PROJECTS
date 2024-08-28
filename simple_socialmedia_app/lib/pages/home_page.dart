@@ -1,8 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:simple_socialmedia_app/pages/login_page.dart';
 import 'package:simple_socialmedia_app/services/auth_servces.dart';
-import 'package:simple_socialmedia_app/widgets/text_field.dart';
+import 'package:simple_socialmedia_app/services/task_services.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -20,12 +21,105 @@ class _HomePageState extends State<HomePage> {
   final TextEditingController startTimeController = TextEditingController();
   String? selectedUser; // Make this nullable
   final Future<List<String>> users = AuthServices().getAllUsers();
+  final authServices = AuthServices();
+  final taskServices = TaskServices();
 
   void logout() {
     FirebaseAuth.instance.signOut();
   }
 
-  void createTask() {}
+  void createTask() async {
+    final currentUserEmail = await authServices.getCurrentUserEmail();
+
+    if (currentUserEmail != null) {
+      final taskName = taskNameController.text.trim();
+      final taskDescription = taskDescriptionController.text.trim();
+      final assignedTo = selectedUser;
+      final startDate = DateTime.parse(startTimeController.text.trim());
+      final endDate = DateTime.parse(deadlineController.text.trim());
+
+      if (taskName.isEmpty ||
+          taskDescription.isEmpty ||
+          assignedTo == null ||
+          startDate == null ||
+          endDate == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("All fields are required"),
+            duration: Duration(seconds: 1),
+          ),
+        );
+        return;
+      } else {
+        taskServices
+            .createTask(
+          taskName,
+          taskDescription,
+          assignedTo,
+          currentUserEmail,
+          startDate,
+          endDate,
+        )
+            .then((value) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Center(
+                child: Text(
+                  "Task created successfully!",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              duration: Duration(seconds: 2),
+              backgroundColor: Colors.green,
+              behavior: SnackBarBehavior.floating,
+              showCloseIcon: true,
+            ),
+          );
+        }).catchError((error) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Center(
+                child: Text(
+                  "Failed to create task: $error",
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              duration: const Duration(seconds: 2),
+              backgroundColor: Colors.red,
+              behavior: SnackBarBehavior.floating,
+              showCloseIcon: true,
+            ),
+          );
+        });
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Center(
+            child: Text(
+              "You are not logged in",
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          duration: Duration(seconds: 2),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+          showCloseIcon: true,
+        ),
+      );
+
+      Navigator.pushNamed(context, "/login");
+    }
+  }
 
   Future<void> _selectEndTime(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -108,35 +202,28 @@ class _HomePageState extends State<HomePage> {
                   const SizedBox(height: 10),
                   DropdownButtonFormField<String>(
                     decoration: InputDecoration(
-                      filled:
-                          true, // This makes sure the dropdown background is filled
-                      fillColor: Colors
-                          .white, // Set a background color to make it stand out
+                      filled: true,
+                      fillColor: Colors.white,
                       border: OutlineInputBorder(
-                        // Add a border to the dropdown
                         borderRadius: BorderRadius.circular(10.0),
                       ),
                       contentPadding: const EdgeInsets.symmetric(
-                          vertical: 10.0,
-                          horizontal:
-                              10.0), // Adjust the padding for better spacing
+                          vertical: 10.0, horizontal: 10.0),
                     ),
                     value: selectedUser,
                     hint: const Text(
                       'Assign To',
                       style: TextStyle(color: Colors.black),
                     ),
-                    icon: const Icon(Icons.arrow_drop_down,
-                        color: Colors.black), // Change the dropdown icon color
+                    icon:
+                        const Icon(Icons.arrow_drop_down, color: Colors.black),
                     items: usersList.map((String user) {
                       return DropdownMenuItem<String>(
                         value: user,
                         child: Text(
                           user,
                           style: const TextStyle(
-                              color: Colors.black,
-                              fontSize:
-                                  16.0), // Adjust the text color and size for visibility
+                              color: Colors.black, fontSize: 16.0),
                         ),
                       );
                     }).toList(),
@@ -145,11 +232,8 @@ class _HomePageState extends State<HomePage> {
                         selectedUser = newValue;
                       });
                     },
-                    dropdownColor:
-                        Colors.white, // Set the dropdown menu background color
-                    style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 16.0), // Set the text style for selected item
+                    dropdownColor: Colors.white,
+                    style: const TextStyle(color: Colors.black, fontSize: 16.0),
                   ),
                   const SizedBox(height: 10),
                   TextField(
@@ -163,13 +247,10 @@ class _HomePageState extends State<HomePage> {
                       fillColor: Colors.blue.shade300,
                       hintStyle: const TextStyle(color: Colors.black),
                       border: OutlineInputBorder(
-                        // Add a border to the dropdown
                         borderRadius: BorderRadius.circular(10.0),
                       ),
                       contentPadding: const EdgeInsets.symmetric(
-                          vertical: 10.0,
-                          horizontal:
-                              10.0), // Adjust the padding for better spacing
+                          vertical: 10.0, horizontal: 10.0),
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -184,13 +265,10 @@ class _HomePageState extends State<HomePage> {
                       fillColor: Colors.blue.shade300,
                       hintStyle: const TextStyle(color: Colors.black),
                       border: OutlineInputBorder(
-                        // Add a border to the dropdown
                         borderRadius: BorderRadius.circular(10.0),
                       ),
                       contentPadding: const EdgeInsets.symmetric(
-                          vertical: 10.0,
-                          horizontal:
-                              10.0), // Adjust the padding for better spacing
+                          vertical: 10.0, horizontal: 10.0),
                     ),
                   ),
                 ],
@@ -203,7 +281,10 @@ class _HomePageState extends State<HomePage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               TextButton(
-                onPressed: createTask,
+                onPressed: () {
+                  createTask(); // Call the createTask function
+                  Navigator.pop(context); // Close the dialog
+                },
                 child: const Text(
                   "Create",
                   style: TextStyle(
