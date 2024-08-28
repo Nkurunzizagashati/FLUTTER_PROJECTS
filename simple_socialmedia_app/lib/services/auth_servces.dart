@@ -15,4 +15,9 @@ class AuthServices {
       'username': username,
     });
   }
+
+  Future<UserCredential> loginUser(String email, String password) async {
+    return await FirebaseAuth.instance
+        .signInWithEmailAndPassword(email: email, password: password);
+  }
 }
