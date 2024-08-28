@@ -21,10 +21,19 @@ class AuthServices {
         .signInWithEmailAndPassword(email: email, password: password);
   }
 
-  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
-      getAllUsers() async {
-    final response = await FirebaseFirestore.instance.collection("users").get();
-    final users = response.docs;
-    return users;
+  Future<List<String>> getAllUsers() async {
+    // Specify the type of the collection reference
+    CollectionReference<Map<String, dynamic>> usersCollection =
+        FirebaseFirestore.instance.collection('users');
+
+    // Now, the snapshot will be of type QuerySnapshot<Map<String, dynamic>>
+    QuerySnapshot<Map<String, dynamic>> snapshot = await usersCollection.get();
+
+    // Extract the 'name' field from each document
+    List<String> userNames = snapshot.docs.map((doc) {
+      return doc.data()['email'] as String; // Ensure type safety here
+    }).toList();
+
+    return userNames;
   }
 }
