@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -179,6 +180,7 @@ class _HomePageState extends State<HomePage> {
                   TextField(
                     controller: taskNameController,
                     obscureText: false,
+                    style: const TextStyle(color: Colors.black),
                     decoration: InputDecoration(
                       hintText: "Task Name",
                       border: OutlineInputBorder(
@@ -189,6 +191,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   const SizedBox(height: 10),
                   TextField(
+                    style: const TextStyle(color: Colors.black),
                     controller: taskDescriptionController,
                     obscureText: false,
                     decoration: InputDecoration(
@@ -320,7 +323,7 @@ class _HomePageState extends State<HomePage> {
               backgroundColor: Theme.of(context).colorScheme.surface,
               appBar: AppBar(
                 foregroundColor: Colors.white,
-                backgroundColor: Theme.of(context).colorScheme.surface,
+                backgroundColor: Theme.of(context).colorScheme.primary,
                 title: const Text(
                   'View Tasks',
                   style: TextStyle(
@@ -340,10 +343,119 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ],
               ),
-              body: const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Column(
-                  children: [],
+              body: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection("tasks")
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return const Center(child: Text("Error loading tasks"));
+                    } else if (!snapshot.hasData ||
+                        snapshot.data!.docs.isEmpty) {
+                      return const Center(child: Text("No tasks available"));
+                    } else {
+                      final tasks = snapshot.data!.docs;
+                      return ListView.builder(
+                        itemCount: tasks.length,
+                        itemBuilder: (context, index) {
+                          final task =
+                              tasks[index].data() as Map<String, dynamic>;
+                          return Card(
+                            margin: const EdgeInsets.symmetric(vertical: 8.0),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15.0),
+                            ),
+                            elevation: 5,
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  ListTile(
+                                    title: Center(
+                                      child: Text(
+                                        task['taskName'] ?? 'Unnamed Task',
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                          fontSize: 18,
+                                        ),
+                                      ),
+                                    ),
+                                    subtitle: Center(
+                                      child: Text(
+                                        task['taskDescription'] ??
+                                            'No description',
+                                        style: const TextStyle(
+                                          color: Colors.grey,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8.0),
+                                  Wrap(
+                                    spacing: 8.0, // Space between widgets
+                                    runSpacing: 4.0, // Space between lines
+                                    children: [
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Assigned To: ${task['assignedTo'] ?? 'N/A'}',
+                                            style: const TextStyle(),
+                                          ),
+                                          Text(
+                                            'Creator: ${task['creator'] ?? 'N/A'}',
+                                            style: const TextStyle(),
+                                          ),
+                                        ],
+                                      ),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Start Date: ${task['startDate'] ?? 'N/A'}',
+                                            style: const TextStyle(),
+                                          ),
+                                          Text(
+                                            'End Date: ${task['endDate'] ?? 'N/A'}',
+                                            style: const TextStyle(),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 8.0),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      const Text('Complete'),
+                                      Checkbox(
+                                        value: task['isComplete'] ?? false,
+                                        onChanged: (bool? value) {
+                                          FirebaseFirestore.instance
+                                              .collection("tasks")
+                                              .doc(tasks[index].id)
+                                              .update({'isComplete': value});
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    }
+                  },
                 ),
               ),
               floatingActionButton: FloatingActionButton(
