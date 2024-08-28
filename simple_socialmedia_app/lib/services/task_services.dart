@@ -17,4 +17,8 @@ class TaskServices {
       'endDate': endDate,
     });
   }
+
+  Stream<QuerySnapshot<Map<String, dynamic>>> getTasksStream() {
+    return FirebaseFirestore.instance.collection("tasks").snapshots();
+  }
 }
