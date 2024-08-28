@@ -20,4 +20,11 @@ class AuthServices {
     return await FirebaseAuth.instance
         .signInWithEmailAndPassword(email: email, password: password);
   }
+
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
+      getAllUsers() async {
+    final response = await FirebaseFirestore.instance.collection("users").get();
+    final users = response.docs;
+    return users;
+  }
 }
