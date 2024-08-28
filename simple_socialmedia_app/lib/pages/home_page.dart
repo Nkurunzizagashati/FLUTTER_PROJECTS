@@ -25,6 +25,8 @@ class _HomePageState extends State<HomePage> {
     FirebaseAuth.instance.signOut();
   }
 
+  void createTask() {}
+
   Future<void> _selectEndTime(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -57,7 +59,16 @@ class _HomePageState extends State<HomePage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("CREATE TASK"),
+        title: const Center(
+          child: Text(
+            "CREATE TASK",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+        ),
+        alignment: Alignment.center,
         content: FutureBuilder<List<String>>(
           future: users,
           builder: (context, snapshot) {
@@ -71,16 +82,28 @@ class _HomePageState extends State<HomePage> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const SizedBox(height: 25),
-                  CustomTextField(
-                    hintText: "task name",
-                    obsecureText: false,
+                  TextField(
                     controller: taskNameController,
+                    obscureText: false,
+                    decoration: InputDecoration(
+                      hintText: "Task Name",
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      hintStyle: const TextStyle(color: Colors.black),
+                    ),
                   ),
                   const SizedBox(height: 10),
-                  CustomTextField(
-                    hintText: "task description",
-                    obsecureText: false,
+                  TextField(
                     controller: taskDescriptionController,
+                    obscureText: false,
+                    decoration: InputDecoration(
+                      hintText: "Task Description",
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      hintStyle: const TextStyle(color: Colors.black),
+                    ),
                   ),
                   const SizedBox(height: 10),
                   DropdownButtonFormField<String>(
@@ -176,9 +199,30 @@ class _HomePageState extends State<HomePage> {
           },
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Cancel"),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              TextButton(
+                onPressed: createTask,
+                child: const Text(
+                  "Create",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text(
+                  "Cancel",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
