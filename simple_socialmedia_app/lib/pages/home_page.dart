@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 import 'package:simple_socialmedia_app/pages/login_page.dart';
 import 'package:simple_socialmedia_app/services/auth_servces.dart';
 import 'package:simple_socialmedia_app/services/task_services.dart';
@@ -173,108 +174,111 @@ class _HomePageState extends State<HomePage> {
               return const Text("Error loading users");
             } else {
               final usersList = snapshot.data ?? [];
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const SizedBox(height: 25),
-                  TextField(
-                    controller: taskNameController,
-                    obscureText: false,
-                    style: const TextStyle(color: Colors.black),
-                    decoration: InputDecoration(
-                      hintText: "Task Name",
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      hintStyle: const TextStyle(color: Colors.black),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  TextField(
-                    style: const TextStyle(color: Colors.black),
-                    controller: taskDescriptionController,
-                    obscureText: false,
-                    decoration: InputDecoration(
-                      hintText: "Task Description",
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      hintStyle: const TextStyle(color: Colors.black),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  DropdownButtonFormField<String>(
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                          vertical: 10.0, horizontal: 10.0),
-                    ),
-                    value: selectedUser,
-                    hint: const Text(
-                      'Assign To',
-                      style: TextStyle(color: Colors.black),
-                    ),
-                    icon:
-                        const Icon(Icons.arrow_drop_down, color: Colors.black),
-                    items: usersList.map((String user) {
-                      return DropdownMenuItem<String>(
-                        value: user,
-                        child: Text(
-                          user,
-                          style: const TextStyle(
-                              color: Colors.black, fontSize: 16.0),
+              return SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(height: 25),
+                    TextField(
+                      controller: taskNameController,
+                      obscureText: false,
+                      style: const TextStyle(color: Colors.black),
+                      decoration: InputDecoration(
+                        hintText: "Task Name",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                      );
-                    }).toList(),
-                    onChanged: (newValue) {
-                      setState(() {
-                        selectedUser = newValue;
-                      });
-                    },
-                    dropdownColor: Colors.white,
-                    style: const TextStyle(color: Colors.black, fontSize: 16.0),
-                  ),
-                  const SizedBox(height: 10),
-                  TextField(
-                    controller: startTimeController,
-                    readOnly: true,
-                    onTap: () => _selectStartTime(context),
-                    decoration: InputDecoration(
-                      hintText: "start date",
-                      suffixIcon: const Icon(Icons.calendar_today),
-                      filled: true,
-                      fillColor: Colors.blue.shade300,
-                      hintStyle: const TextStyle(color: Colors.black),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
+                        hintStyle: const TextStyle(color: Colors.black),
                       ),
-                      contentPadding: const EdgeInsets.symmetric(
-                          vertical: 10.0, horizontal: 10.0),
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  TextField(
-                    controller: deadlineController,
-                    readOnly: true,
-                    onTap: () => _selectEndTime(context),
-                    decoration: InputDecoration(
-                      hintText: "end date",
-                      suffixIcon: const Icon(Icons.calendar_today),
-                      filled: true,
-                      fillColor: Colors.blue.shade300,
-                      hintStyle: const TextStyle(color: Colors.black),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
+                    const SizedBox(height: 10),
+                    TextField(
+                      style: const TextStyle(color: Colors.black),
+                      controller: taskDescriptionController,
+                      obscureText: false,
+                      decoration: InputDecoration(
+                        hintText: "Task Description",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        hintStyle: const TextStyle(color: Colors.black),
                       ),
-                      contentPadding: const EdgeInsets.symmetric(
-                          vertical: 10.0, horizontal: 10.0),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 10),
+                    DropdownButtonFormField<String>(
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 10.0, horizontal: 10.0),
+                      ),
+                      value: selectedUser,
+                      hint: const Text(
+                        'Assign To',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                      icon: const Icon(Icons.arrow_drop_down,
+                          color: Colors.black),
+                      items: usersList.map((String user) {
+                        return DropdownMenuItem<String>(
+                          value: user,
+                          child: Text(
+                            user,
+                            style: const TextStyle(
+                                color: Colors.black, fontSize: 16.0),
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (newValue) {
+                        setState(() {
+                          selectedUser = newValue;
+                        });
+                      },
+                      dropdownColor: Colors.white,
+                      style:
+                          const TextStyle(color: Colors.black, fontSize: 16.0),
+                    ),
+                    const SizedBox(height: 10),
+                    TextField(
+                      controller: startTimeController,
+                      readOnly: true,
+                      onTap: () => _selectStartTime(context),
+                      decoration: InputDecoration(
+                        hintText: "start date",
+                        suffixIcon: const Icon(Icons.calendar_today),
+                        filled: true,
+                        fillColor: Colors.blue.shade300,
+                        hintStyle: const TextStyle(color: Colors.black),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 10.0, horizontal: 10.0),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    TextField(
+                      controller: deadlineController,
+                      readOnly: true,
+                      onTap: () => _selectEndTime(context),
+                      decoration: InputDecoration(
+                        hintText: "end date",
+                        suffixIcon: const Icon(Icons.calendar_today),
+                        filled: true,
+                        fillColor: Colors.blue.shade300,
+                        hintStyle: const TextStyle(color: Colors.black),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 10.0, horizontal: 10.0),
+                      ),
+                    ),
+                  ],
+                ),
               );
             }
           },
@@ -364,6 +368,14 @@ class _HomePageState extends State<HomePage> {
                         itemBuilder: (context, index) {
                           final task =
                               tasks[index].data() as Map<String, dynamic>;
+
+                          // Format DateTime to String
+                          final startDate =
+                              (task['startDate'] as Timestamp?)?.toDate();
+                          final endDate =
+                              (task['endDate'] as Timestamp?)?.toDate();
+                          final formatter =
+                              DateFormat('yyyy-MM-dd'); // Format as needed
                           return Card(
                             margin: const EdgeInsets.symmetric(vertical: 8.0),
                             shape: RoundedRectangleBorder(
@@ -397,6 +409,10 @@ class _HomePageState extends State<HomePage> {
                                       ),
                                     ),
                                   ),
+                                  Divider(
+                                    color: Colors.grey.shade400,
+                                    thickness: 2,
+                                  ),
                                   const SizedBox(height: 8.0),
                                   Wrap(
                                     spacing: 8.0, // Space between widgets
@@ -408,11 +424,14 @@ class _HomePageState extends State<HomePage> {
                                         children: [
                                           Text(
                                             'Assigned To: ${task['assignedTo'] ?? 'N/A'}',
-                                            style: const TextStyle(),
+                                            style:
+                                                const TextStyle(fontSize: 14),
                                           ),
+                                          const SizedBox(height: 10),
                                           Text(
                                             'Creator: ${task['creator'] ?? 'N/A'}',
-                                            style: const TextStyle(),
+                                            style:
+                                                const TextStyle(fontSize: 14),
                                           ),
                                         ],
                                       ),
@@ -421,20 +440,23 @@ class _HomePageState extends State<HomePage> {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            'Start Date: ${task['startDate'] ?? 'N/A'}',
-                                            style: const TextStyle(),
+                                            'Start Date: ${startDate != null ? formatter.format(startDate) : 'N/A'}',
+                                            style:
+                                                const TextStyle(fontSize: 14),
                                           ),
+                                          const SizedBox(height: 10),
                                           Text(
-                                            'End Date: ${task['endDate'] ?? 'N/A'}',
-                                            style: const TextStyle(),
+                                            'End Date: ${endDate != null ? formatter.format(endDate) : 'N/A'}',
+                                            style:
+                                                const TextStyle(fontSize: 14),
                                           ),
                                         ],
-                                      ),
+                                      )
                                     ],
                                   ),
                                   const SizedBox(height: 8.0),
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       const Text('Complete'),
                                       Checkbox(
@@ -446,6 +468,7 @@ class _HomePageState extends State<HomePage> {
                                               .update({'isComplete': value});
                                         },
                                       ),
+                                      const SizedBox(height: 80),
                                     ],
                                   ),
                                 ],

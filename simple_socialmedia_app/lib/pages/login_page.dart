@@ -76,7 +76,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       const SizedBox(height: 25),
                       const Text(
-                        "M I N I M A L",
+                        "W F M S",
                         style: TextStyle(
                           fontSize: 20,
                         ),
