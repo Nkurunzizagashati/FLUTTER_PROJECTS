@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "961513434536",
+    "project_id": "simple-socialmedia-app-e5040",
+    "storage_bucket": "simple-socialmedia-app-e5040.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:961513434536:android:73e2c7081ff86761cc419d",
+        "android_client_info": {
+          "package_name": "com.example.simple_socialmedia_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABMtoFAfeOdtEqbZzKIGN9zshkg8i4HQw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

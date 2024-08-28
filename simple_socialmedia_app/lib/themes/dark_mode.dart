@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 
-ThemeData lightMode = ThemeData(
+ThemeData darkMode = ThemeData(
   brightness: Brightness.dark,
   colorScheme: ColorScheme.light(
     surface: Colors.grey.shade900,
     primary: Colors.grey.shade800,
     secondary: Colors.grey.shade700,
-    inversePrimary: Colors.grey.shade300,
+    inversePrimary: Colors.grey.shade500,
+    brightness: Brightness.dark,
   ),
   textTheme: ThemeData.dark().textTheme.apply(
         bodyColor: Colors.grey.shade300,
