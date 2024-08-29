@@ -123,6 +123,101 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  void editTask(taskID) async {
+    final currentUserEmail = await authServices.getCurrentUserEmail();
+    DateFormat timeFormat = DateFormat("HH:mm");
+
+    if (currentUserEmail != null) {
+      final taskName = taskNameController.text.trim();
+      final taskDescription = taskDescriptionController.text.trim();
+      final assignedTo = selectedUser;
+      final startDate = DateTime.parse(startTimeController.text.trim());
+      final endDate = DateTime.parse(deadlineController.text.trim());
+
+      if (taskName.isEmpty ||
+          taskDescription.isEmpty ||
+          assignedTo == null ||
+          startDate == null ||
+          endDate == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("All fields are required"),
+            duration: Duration(seconds: 1),
+          ),
+        );
+        return;
+      } else {
+        taskServices
+            .updateTask(
+          taskID,
+          taskName,
+          taskDescription,
+          assignedTo,
+          currentUserEmail,
+          startDate,
+          endDate,
+        )
+            .then((value) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Center(
+                child: Text(
+                  "Task created successfully!",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              duration: Duration(seconds: 2),
+              backgroundColor: Colors.green,
+              behavior: SnackBarBehavior.floating,
+              showCloseIcon: true,
+            ),
+          );
+        }).catchError((error) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Center(
+                child: Text(
+                  "Failed to create task: $error",
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              duration: const Duration(seconds: 2),
+              backgroundColor: Colors.red,
+              behavior: SnackBarBehavior.floating,
+              showCloseIcon: true,
+            ),
+          );
+        });
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Center(
+            child: Text(
+              "You are not logged in",
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          duration: Duration(seconds: 2),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+          showCloseIcon: true,
+        ),
+      );
+
+      Navigator.pushNamed(context, "/login");
+    }
+  }
+
   Future<void> _selectEndTime(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -318,13 +413,22 @@ class _HomePageState extends State<HomePage> {
   }
 
   void editBtnClicked(
-      taskName, taskDescription, assignedTo, startDate, endDate) {
+      taskID, taskName, taskDescription, assignedTo, startDate, endDate) {
+    // Initialize the controllers with the existing task values
+    taskNameController.text = taskName;
+    taskDescriptionController.text = taskDescription;
+    startTimeController.text = startDate.toString().split(' ')[0];
+    deadlineController.text = endDate.toString().split(' ')[0];
+
+    // Initialize selected user
+    selectedUser = assignedTo;
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Center(
           child: Text(
-            "CREATE TASK",
+            "EDIT TASK",
             style: TextStyle(
               fontWeight: FontWeight.bold,
               color: Colors.black,
@@ -414,7 +518,7 @@ class _HomePageState extends State<HomePage> {
                       readOnly: true,
                       onTap: () => _selectStartTime(context),
                       decoration: InputDecoration(
-                        hintText: "start date",
+                        hintText: "Start Date",
                         suffixIcon: const Icon(Icons.calendar_today),
                         filled: true,
                         fillColor: Colors.blue.shade300,
@@ -432,7 +536,7 @@ class _HomePageState extends State<HomePage> {
                       readOnly: true,
                       onTap: () => _selectEndTime(context),
                       decoration: InputDecoration(
-                        hintText: "end date",
+                        hintText: "End Date",
                         suffixIcon: const Icon(Icons.calendar_today),
                         filled: true,
                         fillColor: Colors.blue.shade300,
@@ -456,11 +560,11 @@ class _HomePageState extends State<HomePage> {
             children: [
               TextButton(
                 onPressed: () {
-                  createTask(); // Call the createTask function
+                  editTask(taskID); // Call the editTask function
                   Navigator.pop(context); // Close the dialog
                 },
                 child: const Text(
-                  "Create",
+                  "Edit",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 18,
@@ -636,14 +740,17 @@ class _HomePageState extends State<HomePage> {
                                                   .collection("tasks")
                                                   .doc(tasks[index].id)
                                                   .update(
-                                                      {'isCompleted': value});
+                                                {'isCompleted': value},
+                                              );
                                             },
+                                            checkColor: Colors.green,
                                           ),
                                         ],
                                       ),
                                       IconButton(
                                         onPressed: () {
                                           editBtnClicked(
+                                            tasks[index].id,
                                             task['taskName'] ?? "No task name",
                                             task['taskDescription'] ??
                                                 "No Description",

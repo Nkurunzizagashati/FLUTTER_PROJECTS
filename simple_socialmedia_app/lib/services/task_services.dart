@@ -21,4 +21,32 @@ class TaskServices {
   Stream<QuerySnapshot<Map<String, dynamic>>> getTasksStream() {
     return FirebaseFirestore.instance.collection("tasks").snapshots();
   }
+
+  Future<void> updateTask(
+      String taskID,
+      String taskName,
+      String taskDescription,
+      String assignedTo,
+      String creator,
+      DateTime startDate,
+      DateTime endDate) async {
+    return await FirebaseFirestore.instance
+        .collection("tasks")
+        .doc(taskID)
+        .update({
+      'isCompleted': false,
+      'taskName': taskName,
+      'taskDescription': taskDescription,
+      'assignedTo': assignedTo,
+      'creator': creator,
+      'startDate': startDate,
+      'endDate': endDate,
+    });
+  }
+
+  Future<void> updateTaskCompletionStatus(String taskID, bool isCompleted) {
+    return FirebaseFirestore.instance.collection("tasks").doc(taskID).update({
+      isCompleted: isCompleted,
+    });
+  }
 }
