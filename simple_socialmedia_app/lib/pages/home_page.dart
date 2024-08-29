@@ -317,6 +317,173 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  void editBtnClicked(
+      taskName, taskDescription, assignedTo, startDate, endDate) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Center(
+          child: Text(
+            "CREATE TASK",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+        ),
+        alignment: Alignment.center,
+        content: FutureBuilder<List<String>>(
+          future: users,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const CircularProgressIndicator();
+            } else if (snapshot.hasError) {
+              return const Text("Error loading users");
+            } else {
+              final usersList = snapshot.data ?? [];
+              return SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(height: 25),
+                    TextField(
+                      controller: taskNameController,
+                      obscureText: false,
+                      style: const TextStyle(color: Colors.black),
+                      decoration: InputDecoration(
+                        hintText: "Task Name",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        hintStyle: const TextStyle(color: Colors.black),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    TextField(
+                      style: const TextStyle(color: Colors.black),
+                      controller: taskDescriptionController,
+                      obscureText: false,
+                      decoration: InputDecoration(
+                        hintText: "Task Description",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        hintStyle: const TextStyle(color: Colors.black),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    DropdownButtonFormField<String>(
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 10.0, horizontal: 10.0),
+                      ),
+                      value: selectedUser,
+                      hint: const Text(
+                        'Assign To',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                      icon: const Icon(Icons.arrow_drop_down,
+                          color: Colors.black),
+                      items: usersList.map((String user) {
+                        return DropdownMenuItem<String>(
+                          value: user,
+                          child: Text(
+                            user,
+                            style: const TextStyle(
+                                color: Colors.black, fontSize: 16.0),
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (newValue) {
+                        setState(() {
+                          selectedUser = newValue;
+                        });
+                      },
+                      dropdownColor: Colors.white,
+                      style:
+                          const TextStyle(color: Colors.black, fontSize: 16.0),
+                    ),
+                    const SizedBox(height: 10),
+                    TextField(
+                      controller: startTimeController,
+                      readOnly: true,
+                      onTap: () => _selectStartTime(context),
+                      decoration: InputDecoration(
+                        hintText: "start date",
+                        suffixIcon: const Icon(Icons.calendar_today),
+                        filled: true,
+                        fillColor: Colors.blue.shade300,
+                        hintStyle: const TextStyle(color: Colors.black),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 10.0, horizontal: 10.0),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    TextField(
+                      controller: deadlineController,
+                      readOnly: true,
+                      onTap: () => _selectEndTime(context),
+                      decoration: InputDecoration(
+                        hintText: "end date",
+                        suffixIcon: const Icon(Icons.calendar_today),
+                        filled: true,
+                        fillColor: Colors.blue.shade300,
+                        hintStyle: const TextStyle(color: Colors.black),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 10.0, horizontal: 10.0),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+          },
+        ),
+        actions: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              TextButton(
+                onPressed: () {
+                  createTask(); // Call the createTask function
+                  Navigator.pop(context); // Close the dialog
+                },
+                child: const Text(
+                  "Create",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text(
+                  "Cancel",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
@@ -390,7 +557,7 @@ class _HomePageState extends State<HomePage> {
                                   ListTile(
                                     title: Center(
                                       child: Text(
-                                        task['taskName'] ?? 'Unnamed Task',
+                                        "${task['taskName'] ?? 'Unnamed Task'}",
                                         style: const TextStyle(
                                           fontWeight: FontWeight.bold,
                                           color: Colors.white,
@@ -456,19 +623,51 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                   const SizedBox(height: 8.0),
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
                                     children: [
-                                      const Text('Complete'),
-                                      Checkbox(
-                                        value: task['isComplete'] ?? false,
-                                        onChanged: (bool? value) {
+                                      Row(
+                                        children: [
+                                          const Text('Completed'),
+                                          Checkbox(
+                                            value: task['isCompleted'] ?? false,
+                                            onChanged: (bool? value) {
+                                              FirebaseFirestore.instance
+                                                  .collection("tasks")
+                                                  .doc(tasks[index].id)
+                                                  .update(
+                                                      {'isCompleted': value});
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                      IconButton(
+                                        onPressed: () {
+                                          editBtnClicked(
+                                            task['taskName'] ?? "No task name",
+                                            task['taskDescription'] ??
+                                                "No Description",
+                                            task['assignedTo'] ?? "N/A",
+                                            startDate,
+                                            endDate,
+                                          );
+                                        },
+                                        icon: const Icon(Icons.edit),
+                                        color: Colors.white,
+                                        iconSize: 30,
+                                      ),
+                                      IconButton(
+                                        onPressed: () {
                                           FirebaseFirestore.instance
                                               .collection("tasks")
                                               .doc(tasks[index].id)
-                                              .update({'isComplete': value});
+                                              .delete();
                                         },
+                                        icon: const Icon(Icons.delete),
+                                        color: Colors.red.shade900,
+                                        iconSize: 30,
                                       ),
-                                      const SizedBox(height: 80),
+                                      const SizedBox(height: 30),
                                     ],
                                   ),
                                 ],
