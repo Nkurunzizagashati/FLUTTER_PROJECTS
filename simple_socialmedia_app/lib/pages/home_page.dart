@@ -15,16 +15,36 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final TextEditingController taskNameController = TextEditingController();
-  final TextEditingController taskDescriptionController =
+  late TextEditingController taskNameController = TextEditingController();
+  late TextEditingController taskDescriptionController =
       TextEditingController();
-  final TextEditingController assignedToController = TextEditingController();
-  final TextEditingController deadlineController = TextEditingController();
-  final TextEditingController startTimeController = TextEditingController();
+  late TextEditingController deadlineController = TextEditingController();
+  late TextEditingController startTimeController = TextEditingController();
+
   String? selectedUser; // Make this nullable
   final Future<List<String>> users = AuthServices().getAllUsers();
   final authServices = AuthServices();
   final taskServices = TaskServices();
+  final currentUserEmail = AuthServices().getCurrentUserEmail();
+
+  @override
+  void initState() {
+    super.initState();
+    taskNameController = TextEditingController();
+    taskDescriptionController = TextEditingController();
+    startTimeController = TextEditingController();
+    deadlineController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    taskNameController.dispose();
+    taskDescriptionController.dispose();
+    startTimeController.dispose();
+    deadlineController.dispose();
+
+    super.dispose();
+  }
 
   void logout() {
     FirebaseAuth.instance.signOut();
@@ -125,7 +145,6 @@ class _HomePageState extends State<HomePage> {
 
   void editTask(taskID) async {
     final currentUserEmail = await authServices.getCurrentUserEmail();
-    DateFormat timeFormat = DateFormat("HH:mm");
 
     if (currentUserEmail != null) {
       final taskName = taskNameController.text.trim();
@@ -618,174 +637,371 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ],
               ),
-              body: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance
-                      .collection("tasks")
-                      .snapshots(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    } else if (snapshot.hasError) {
-                      return const Center(child: Text("Error loading tasks"));
-                    } else if (!snapshot.hasData ||
-                        snapshot.data!.docs.isEmpty) {
-                      return const Center(child: Text("No tasks available"));
-                    } else {
-                      final tasks = snapshot.data!.docs;
-                      return ListView.builder(
-                        itemCount: tasks.length,
-                        itemBuilder: (context, index) {
-                          final task =
-                              tasks[index].data() as Map<String, dynamic>;
+              body: FutureBuilder<String?>(
+                future: AuthServices().getCurrentUserEmail(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return const Center(
+                        child: Text("Error loading user email"));
+                  } else if (!snapshot.hasData || snapshot.data == null) {
+                    return const Center(child: Text("No user email available"));
+                  } else {
+                    final currentUserEmail = snapshot.data!;
+                    Stream<List<DocumentSnapshot>> taskStream;
 
-                          // Format DateTime to String
-                          final startDate =
-                              (task['startDate'] as Timestamp?)?.toDate();
-                          final endDate =
-                              (task['endDate'] as Timestamp?)?.toDate();
-                          final formatter =
-                              DateFormat('yyyy-MM-dd'); // Format as needed
-                          return Card(
-                            margin: const EdgeInsets.symmetric(vertical: 8.0),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15.0),
-                            ),
-                            elevation: 5,
-                            child: Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  ListTile(
-                                    title: Center(
-                                      child: Text(
-                                        "${task['taskName'] ?? 'Unnamed Task'}",
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                          fontSize: 18,
-                                        ),
-                                      ),
-                                    ),
-                                    subtitle: Center(
-                                      child: Text(
-                                        task['taskDescription'] ??
-                                            'No description',
-                                        style: const TextStyle(
-                                          color: Colors.grey,
-                                          fontSize: 14,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Divider(
-                                    color: Colors.grey.shade400,
-                                    thickness: 2,
-                                  ),
-                                  const SizedBox(height: 8.0),
-                                  Wrap(
-                                    spacing: 8.0, // Space between widgets
-                                    runSpacing: 4.0, // Space between lines
-                                    children: [
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Assigned To: ${task['assignedTo'] ?? 'N/A'}',
-                                            style:
-                                                const TextStyle(fontSize: 14),
-                                          ),
-                                          const SizedBox(height: 10),
-                                          Text(
-                                            'Creator: ${task['creator'] ?? 'N/A'}',
-                                            style:
-                                                const TextStyle(fontSize: 14),
-                                          ),
-                                        ],
-                                      ),
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Start Date: ${startDate != null ? formatter.format(startDate) : 'N/A'}',
-                                            style:
-                                                const TextStyle(fontSize: 14),
-                                          ),
-                                          const SizedBox(height: 10),
-                                          Text(
-                                            'End Date: ${endDate != null ? formatter.format(endDate) : 'N/A'}',
-                                            style:
-                                                const TextStyle(fontSize: 14),
-                                          ),
-                                        ],
-                                      )
-                                    ],
-                                  ),
-                                  const SizedBox(height: 8.0),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          const Text('Completed'),
-                                          Checkbox(
-                                            value: task['isCompleted'] ?? false,
-                                            onChanged: (bool? value) {
-                                              FirebaseFirestore.instance
-                                                  .collection("tasks")
-                                                  .doc(tasks[index].id)
-                                                  .update(
-                                                {'isCompleted': value},
-                                              );
-                                            },
-                                            checkColor: Colors.green,
-                                          ),
-                                        ],
-                                      ),
-                                      IconButton(
-                                        onPressed: () {
-                                          editBtnClicked(
-                                            tasks[index].id,
-                                            task['taskName'] ?? "No task name",
-                                            task['taskDescription'] ??
-                                                "No Description",
-                                            task['assignedTo'] ?? "N/A",
-                                            startDate,
-                                            endDate,
-                                          );
-                                        },
-                                        icon: const Icon(Icons.edit),
-                                        color: Colors.white,
-                                        iconSize: 30,
-                                      ),
-                                      IconButton(
-                                        onPressed: () {
-                                          FirebaseFirestore.instance
-                                              .collection("tasks")
-                                              .doc(tasks[index].id)
-                                              .delete();
-                                        },
-                                        icon: const Icon(Icons.delete),
-                                        color: Colors.red.shade900,
-                                        iconSize: 30,
-                                      ),
-                                      const SizedBox(height: 30),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      );
+                    if (currentUserEmail == "admin@gmail.com") {
+                      taskStream = FirebaseFirestore.instance
+                          .collection("tasks")
+                          .snapshots()
+                          .map((querySnapshot) => querySnapshot.docs);
+                    } else {
+                      taskStream = FirebaseFirestore.instance
+                          .collection("tasks")
+                          .where('creator', isEqualTo: currentUserEmail)
+                          .snapshots()
+                          .asyncMap((creatorQuerySnapshot) async {
+                        final assignedToSnapshot = await FirebaseFirestore
+                            .instance
+                            .collection("tasks")
+                            .where('assignedTo', isEqualTo: currentUserEmail)
+                            .get();
+                        final allDocs = <DocumentSnapshot>{};
+                        allDocs.addAll(creatorQuerySnapshot.docs);
+                        allDocs.addAll(assignedToSnapshot.docs);
+                        return allDocs.toList();
+                      });
                     }
-                  },
-                ),
+
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: StreamBuilder<List<DocumentSnapshot>>(
+                        stream: taskStream,
+                        builder: (context, taskSnapshot) {
+                          if (taskSnapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          } else if (taskSnapshot.hasError) {
+                            return const Center(
+                                child: Text("Error loading tasks"));
+                          } else if (!taskSnapshot.hasData ||
+                              taskSnapshot.data!.isEmpty) {
+                            return const Center(
+                                child: Text("No tasks available"));
+                          } else {
+                            final tasks = taskSnapshot.data!;
+                            return ListView.builder(
+                              itemCount: tasks.length,
+                              itemBuilder: (context, index) {
+                                final task =
+                                    tasks[index].data() as Map<String, dynamic>;
+
+                                // Format DateTime to String
+                                final startDate =
+                                    (task['startDate'] as Timestamp?)?.toDate();
+                                final endDate =
+                                    (task['endDate'] as Timestamp?)?.toDate();
+                                final formatter = DateFormat(
+                                    'yyyy-MM-dd'); // Format as needed
+                                return Card(
+                                  margin:
+                                      const EdgeInsets.symmetric(vertical: 8.0),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15.0),
+                                  ),
+                                  elevation: 5,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(12.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        ListTile(
+                                          title: Center(
+                                            child: Text(
+                                              "${task['taskName'] ?? 'Unnamed Task'}",
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white,
+                                                fontSize: 18,
+                                              ),
+                                            ),
+                                          ),
+                                          subtitle: Center(
+                                            child: Text(
+                                              task['taskDescription'] ??
+                                                  'No description',
+                                              style: const TextStyle(
+                                                  color: Colors.grey,
+                                                  fontSize: 14),
+                                            ),
+                                          ),
+                                        ),
+                                        Divider(
+                                          color: Colors.grey.shade400,
+                                          thickness: 2,
+                                        ),
+                                        const SizedBox(height: 8.0),
+                                        Wrap(
+                                          spacing: 8.0, // Space between widgets
+                                          runSpacing:
+                                              4.0, // Space between lines
+                                          children: [
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  'Assigned To: ${task['assignedTo'] == currentUserEmail ? 'YOU' : task['assignedTo']}',
+                                                  style: const TextStyle(
+                                                      fontSize: 14),
+                                                ),
+                                                const SizedBox(height: 10),
+                                                Text(
+                                                  'Creator: ${task['creator'] == currentUserEmail ? 'YOU' : task['creator']}',
+                                                  style: const TextStyle(
+                                                      fontSize: 14),
+                                                ),
+                                              ],
+                                            ),
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  'Start Date: ${startDate != null ? formatter.format(startDate) : 'N/A'}',
+                                                  style: const TextStyle(
+                                                      fontSize: 14),
+                                                ),
+                                                const SizedBox(height: 10),
+                                                Text(
+                                                  'End Date: ${endDate != null ? formatter.format(endDate) : 'N/A'}',
+                                                  style: const TextStyle(
+                                                      fontSize: 14),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 8.0),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceAround,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                const Text('Completed'),
+                                                Checkbox(
+                                                  value: task['isCompleted'] ??
+                                                      false,
+                                                  onChanged: (bool? value) {
+                                                    FirebaseFirestore.instance
+                                                        .collection("tasks")
+                                                        .doc(tasks[index].id)
+                                                        .update(
+                                                      {'isCompleted': value},
+                                                    );
+                                                  },
+                                                  checkColor: Colors.green,
+                                                ),
+                                              ],
+                                            ),
+                                            IconButton(
+                                              onPressed: () {
+                                                if (currentUserEmail ==
+                                                        task['creator'] ||
+                                                    currentUserEmail ==
+                                                        "admin@gmail.com") {
+                                                  editBtnClicked(
+                                                    tasks[index].id,
+                                                    task['taskName'] ??
+                                                        "No task name",
+                                                    task['taskDescription'] ??
+                                                        "No Description",
+                                                    task['assignedTo'] ?? "N/A",
+                                                    startDate,
+                                                    endDate,
+                                                  );
+                                                } else {
+                                                  showDialog(
+                                                    context: context,
+                                                    builder:
+                                                        (BuildContext context) {
+                                                      return AlertDialog(
+                                                        title: const Center(
+                                                          child: Text(
+                                                            "Unauthorized",
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Colors.black,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        content: const Text(
+                                                          "You are not allowed to perform this action.",
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.black),
+                                                        ),
+                                                        actions: <Widget>[
+                                                          TextButton(
+                                                            child: const Text(
+                                                              "OK",
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .black),
+                                                            ),
+                                                            onPressed: () {
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop(); // Close the dialog
+                                                            },
+                                                          ),
+                                                        ],
+                                                      );
+                                                    },
+                                                  );
+                                                }
+                                              },
+                                              icon: const Icon(Icons.edit),
+                                              color: Colors.white,
+                                              iconSize: 30,
+                                            ),
+                                            IconButton(
+                                              onPressed: () {
+                                                if (currentUserEmail ==
+                                                        task['creator'] ||
+                                                    currentUserEmail ==
+                                                        "admin@gmail.com") {
+                                                  showDialog(
+                                                    context: context,
+                                                    builder:
+                                                        (BuildContext context) {
+                                                      return AlertDialog(
+                                                        title: const Center(
+                                                          child: Text(
+                                                            "DELETE TASK?",
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Colors.black,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        content: const Text(
+                                                          "Once deleted, you won't retrieve it",
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.black),
+                                                        ),
+                                                        actions: <Widget>[
+                                                          Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceBetween,
+                                                            children: [
+                                                              TextButton(
+                                                                child:
+                                                                    const Text(
+                                                                  "CANCEL",
+                                                                  style: TextStyle(
+                                                                      color: Colors
+                                                                          .black),
+                                                                ),
+                                                                onPressed: () {
+                                                                  Navigator.of(
+                                                                          context)
+                                                                      .pop(); // Close the dialog
+                                                                },
+                                                              ),
+                                                              TextButton(
+                                                                child:
+                                                                    const Text(
+                                                                  "DELETE",
+                                                                  style: TextStyle(
+                                                                      color: Colors
+                                                                          .red),
+                                                                ),
+                                                                onPressed: () {
+                                                                  FirebaseFirestore
+                                                                      .instance
+                                                                      .collection(
+                                                                          "tasks")
+                                                                      .doc(tasks[
+                                                                              index]
+                                                                          .id)
+                                                                      .delete();
+                                                                  Navigator.of(
+                                                                          context)
+                                                                      .pop();
+                                                                },
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ],
+                                                      );
+                                                    },
+                                                  );
+                                                } else {
+                                                  showDialog(
+                                                    context: context,
+                                                    builder:
+                                                        (BuildContext context) {
+                                                      return AlertDialog(
+                                                        title: const Center(
+                                                          child: Text(
+                                                            "Unauthorized",
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Colors.black,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        content: const Text(
+                                                          "You are not allowed to perform this action.",
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.black),
+                                                        ),
+                                                        actions: <Widget>[
+                                                          TextButton(
+                                                            child: const Text(
+                                                              "OK",
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .black),
+                                                            ),
+                                                            onPressed: () {
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop(); // Close the dialog
+                                                            },
+                                                          ),
+                                                        ],
+                                                      );
+                                                    },
+                                                  );
+                                                }
+                                              },
+                                              icon: const Icon(Icons.delete),
+                                              color: Colors.red.shade900,
+                                              iconSize: 30,
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          }
+                        },
+                      ),
+                    );
+                  }
+                },
               ),
               floatingActionButton: FloatingActionButton(
                 onPressed: createTaskBtnClicked,
