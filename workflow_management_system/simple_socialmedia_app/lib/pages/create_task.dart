@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:simple_socialmedia_app/services/auth_servces.dart';
 import 'package:simple_socialmedia_app/services/task_services.dart';
+import 'package:simple_socialmedia_app/utils/task_utils.dart';
 
 class CreateTask extends StatefulWidget {
   const CreateTask({super.key});
@@ -267,8 +268,16 @@ class _CreateTaskState extends State<CreateTask> {
                         children: [
                           TextButton(
                             onPressed: () {
-                              // createTask(); // Call the createTask function
-                              Navigator.pop(context); // Close the dialog
+                              createTask(
+                                context,
+                                taskNameController,
+                                taskDescriptionController,
+                                selectedUser,
+                                startTimeController,
+                                deadlineController,
+                              ); // Call the createTask function
+                              Navigator.pop(context);
+                              Navigator.pop(context);
                             },
                             child: Text(
                               "Create",
