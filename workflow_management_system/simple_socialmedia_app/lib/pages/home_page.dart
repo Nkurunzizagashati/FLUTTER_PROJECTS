@@ -47,10 +47,6 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  void logout() {
-    FirebaseAuth.instance.signOut();
-  }
-
   void createTask() async {
     final currentUserEmail = await authServices.getCurrentUserEmail();
 
@@ -627,16 +623,6 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 centerTitle: true,
-                actions: [
-                  IconButton(
-                    icon: const Icon(Icons.notifications),
-                    onPressed: () {},
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.logout),
-                    onPressed: logout,
-                  ),
-                ],
               ),
               drawer: const DrawerPage(),
               body: FutureBuilder<String?>(
