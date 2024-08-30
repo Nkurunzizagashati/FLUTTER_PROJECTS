@@ -6,9 +6,9 @@ class DrawerPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       // padding: EdgeInsets.fromLTRB(10, 70, 10, 30),
-      width: MediaQuery.of(context).size.width * 0.95,
+      width: MediaQuery.of(context).size.width * 0.90,
       child: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.surface,
         body: Column(
@@ -31,13 +31,13 @@ class DrawerPage extends StatelessWidget {
                 children: [
                   Icon(
                     Icons.notifications,
-                    size: 40,
+                    size: 30,
                   ),
                   Text(
                     "NOTIFICATIONS",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 20,
+                      fontSize: 18,
                     ),
                   )
                 ],
@@ -56,13 +56,13 @@ class DrawerPage extends StatelessWidget {
                 children: [
                   Icon(
                     Icons.settings,
-                    size: 40,
+                    size: 30,
                   ),
                   Text(
                     "SETTINGS",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 20,
+                      fontSize: 18,
                     ),
                   ),
                 ],
@@ -81,21 +81,21 @@ class DrawerPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Icon(
-                      Icons.create,
-                      size: 40,
+                      Icons.add,
+                      size: 30,
                     ),
                     Text(
                       "CREATE TASK",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 20,
+                        fontSize: 18,
                       ),
                     ),
                   ],
                 ),
               ),
               onTap: () {
-                FirebaseAuth.instance.signOut();
+                Navigator.pushNamed(context, '/create-task');
               },
             ),
             const SizedBox(height: 10),
@@ -112,13 +112,13 @@ class DrawerPage extends StatelessWidget {
                   children: [
                     Icon(
                       Icons.logout,
-                      size: 40,
+                      size: 30,
                     ),
                     Text(
                       "LOGOUT",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 20,
+                        fontSize: 18,
                       ),
                     ),
                   ],

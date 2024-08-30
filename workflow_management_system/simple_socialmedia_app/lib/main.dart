@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:simple_socialmedia_app/auth/auth.dart';
+import 'package:simple_socialmedia_app/pages/create_task.dart';
 import 'package:simple_socialmedia_app/pages/home_page.dart';
 import 'package:simple_socialmedia_app/pages/login_page.dart';
 import 'package:simple_socialmedia_app/pages/register_page.dart';
@@ -29,7 +30,8 @@ class MyApp extends StatelessWidget {
         '/home': (context) => const HomePage(),
         '/auth': (context) => const AuthPage(),
         '/login': (context) => const LoginPage(),
-        '/register': (context) => const RegisterPage()
+        '/register': (context) => const RegisterPage(),
+        '/create-task': (context) => const CreateTask()
       },
     );
   }
