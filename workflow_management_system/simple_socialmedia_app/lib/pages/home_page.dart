@@ -360,12 +360,65 @@ class _HomePageState extends State<HomePage> {
                   'View Tasks',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 18,
+                    fontSize: 22,
                   ),
                 ),
                 centerTitle: true,
+                leading: Builder(
+                  builder: (BuildContext context) {
+                    return IconButton(
+                      icon: const Icon(
+                        Icons.menu, // Hamburger menu icon
+                        size: 40.0, // Increase the size here
+                      ),
+                      onPressed: () {
+                        Scaffold.of(context).openDrawer();
+                      },
+                    );
+                  },
+                ),
+                actions: [
+                  Stack(
+                    children: [
+                      IconButton(
+                        icon: const Icon(
+                          Icons.notifications_active,
+                          size: 40,
+                        ),
+                        onPressed: () {},
+                      ),
+                      if (2 > 0)
+                        Positioned(
+                          right: 8.0,
+                          top: 8.0,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 2.0, vertical: 2.0),
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            constraints: const BoxConstraints(
+                              minWidth: 24,
+                              minHeight: 24,
+                            ),
+                            child: const Center(
+                              child: Text(
+                                '2',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  )
+                ],
               ),
               drawer: const DrawerPage(),
+              drawerEdgeDragWidth: 60,
               body: FutureBuilder<String?>(
                 future: AuthServices().getCurrentUserEmail(),
                 builder: (context, snapshot) {
@@ -543,16 +596,31 @@ class _HomePageState extends State<HomePage> {
                                                         task['creator'] ||
                                                     currentUserEmail ==
                                                         "admin@gmail.com") {
-                                                  editBtnClicked(
-                                                    tasks[index].id,
-                                                    task['taskName'] ??
-                                                        "No task name",
-                                                    task['taskDescription'] ??
-                                                        "No Description",
-                                                    task['assignedTo'] ?? "N/A",
-                                                    startDate,
-                                                    endDate,
-                                                  );
+                                                  // editBtnClicked(
+                                                  //   tasks[index].id,
+                                                  //   task['taskName'] ??
+                                                  //       "No task name",
+                                                  //   task['taskDescription'] ??
+                                                  //       "No Description",
+                                                  //   task['assignedTo'] ?? "N/A",
+                                                  //   startDate,
+                                                  //   endDate,
+                                                  // );
+
+                                                  Navigator.pushNamed(
+                                                      context, '/update-task',
+                                                      arguments: {
+                                                        'taskID':
+                                                            tasks[index].id,
+                                                        'taskName':
+                                                            task['taskName'],
+                                                        'taskDescription': task[
+                                                            'taskDescription'],
+                                                        'assignedTo':
+                                                            task['assignedTo'],
+                                                        'startDate': startDate,
+                                                        'endDate': endDate,
+                                                      });
                                                 } else {
                                                   showDialog(
                                                     context: context,

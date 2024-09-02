@@ -49,4 +49,11 @@ class TaskServices {
       isCompleted: isCompleted,
     });
   }
+
+  Stream<DocumentSnapshot<Map<String, dynamic>>> getTaskStream(taskID) {
+    return FirebaseFirestore.instance
+        .collection("tasks")
+        .doc(taskID)
+        .snapshots();
+  }
 }
