@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:simple_socialmedia_app/pages/drawer_page.dart';
 import 'package:simple_socialmedia_app/pages/login_page.dart';
 import 'package:simple_socialmedia_app/services/auth_servces.dart';
+import 'package:simple_socialmedia_app/services/notification.dart';
 import 'package:simple_socialmedia_app/services/task_services.dart';
 
 class HomePage extends StatefulWidget {
@@ -345,6 +346,10 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  // NOTIFICATIONS
+
+  final allNotications = Notifications().getMyNotifications();
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
@@ -387,34 +392,34 @@ class _HomePageState extends State<HomePage> {
                         ),
                         onPressed: () {},
                       ),
-                      if (2 > 0)
-                        Positioned(
-                          right: 8.0,
-                          top: 8.0,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 2.0, vertical: 2.0),
-                            decoration: BoxDecoration(
-                              color: Colors.red,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            constraints: const BoxConstraints(
-                              minWidth: 24,
-                              minHeight: 24,
-                            ),
-                            child: const Center(
-                              child: Text(
-                                '2',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
+                      // StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                      //   stream: Notifications().getMyUnreadNotifications(),
+                      //   builder: (context, snapshot) {
+                      //     return Container(
+                      //       padding: const EdgeInsets.symmetric(
+                      //           horizontal: 2.0, vertical: 2.0),
+                      //       decoration: BoxDecoration(
+                      //         color: Colors.red,
+                      //         borderRadius: BorderRadius.circular(12),
+                      //       ),
+                      //       constraints: const BoxConstraints(
+                      //         minWidth: 24,
+                      //         minHeight: 24,
+                      //       ),
+                      //       child: const Center(
+                      //         child: Text(
+                      //           '2',
+                      //           style: TextStyle(
+                      //             color: Colors.white,
+                      //             fontWeight: FontWeight.bold,
+                      //           ),
+                      //         ),
+                      //       ),
+                      //     );
+                      //   },
+                      // ),
                     ],
-                  )
+                  ),
                 ],
               ),
               drawer: const DrawerPage(),
@@ -596,31 +601,16 @@ class _HomePageState extends State<HomePage> {
                                                         task['creator'] ||
                                                     currentUserEmail ==
                                                         "admin@gmail.com") {
-                                                  // editBtnClicked(
-                                                  //   tasks[index].id,
-                                                  //   task['taskName'] ??
-                                                  //       "No task name",
-                                                  //   task['taskDescription'] ??
-                                                  //       "No Description",
-                                                  //   task['assignedTo'] ?? "N/A",
-                                                  //   startDate,
-                                                  //   endDate,
-                                                  // );
-
-                                                  Navigator.pushNamed(
-                                                      context, '/update-task',
-                                                      arguments: {
-                                                        'taskID':
-                                                            tasks[index].id,
-                                                        'taskName':
-                                                            task['taskName'],
-                                                        'taskDescription': task[
-                                                            'taskDescription'],
-                                                        'assignedTo':
-                                                            task['assignedTo'],
-                                                        'startDate': startDate,
-                                                        'endDate': endDate,
-                                                      });
+                                                  editBtnClicked(
+                                                    tasks[index].id,
+                                                    task['taskName'] ??
+                                                        "No task name",
+                                                    task['taskDescription'] ??
+                                                        "No Description",
+                                                    task['assignedTo'] ?? "N/A",
+                                                    startDate,
+                                                    endDate,
+                                                  );
                                                 } else {
                                                   showDialog(
                                                     context: context,

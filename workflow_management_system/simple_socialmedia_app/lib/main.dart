@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:simple_socialmedia_app/auth/auth.dart';
+import 'package:simple_socialmedia_app/firebase_options.dart';
 import 'package:simple_socialmedia_app/pages/create_task.dart';
 import 'package:simple_socialmedia_app/pages/home_page.dart';
 import 'package:simple_socialmedia_app/pages/login_page.dart';
@@ -11,7 +12,7 @@ import 'package:simple_socialmedia_app/themes/light_mode.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   runApp(const MyApp());
 }

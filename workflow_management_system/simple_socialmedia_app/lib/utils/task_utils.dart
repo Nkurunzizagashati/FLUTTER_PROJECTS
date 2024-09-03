@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:simple_socialmedia_app/services/auth_servces.dart';
+import 'package:simple_socialmedia_app/services/notification.dart';
 import 'package:simple_socialmedia_app/services/task_services.dart';
 
 final authServices = AuthServices();
@@ -51,6 +52,10 @@ void createTask(
             duration: Duration(seconds: 2),
           ),
         );
+
+        const message = "task created for you";
+
+        Notifications().notify(currentUserEmail, assignedTo, message);
       } catch (error) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(

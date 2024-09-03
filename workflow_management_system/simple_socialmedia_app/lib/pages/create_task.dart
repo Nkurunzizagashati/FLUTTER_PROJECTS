@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:simple_socialmedia_app/services/auth_servces.dart';
+import 'package:simple_socialmedia_app/services/notification.dart';
 import 'package:simple_socialmedia_app/services/task_services.dart';
 import 'package:simple_socialmedia_app/utils/task_utils.dart';
 
@@ -22,6 +23,7 @@ class _CreateTaskState extends State<CreateTask> {
   final authServices = AuthServices();
   final taskServices = TaskServices();
   final currentUserEmail = AuthServices().getCurrentUserEmail();
+  final notifications = Notifications();
 
   @override
   void initState() {
