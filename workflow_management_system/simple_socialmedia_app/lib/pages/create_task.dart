@@ -128,9 +128,12 @@ class _CreateTaskState extends State<CreateTask> {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        title: const Text("CREATE TASK"),
+        title: const Text(
+          "CREATE TASK",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
-        foregroundColor: Colors.white,
+        foregroundColor: Theme.of(context).colorScheme.inversePrimary,
         backgroundColor: Theme.of(context).colorScheme.primary,
       ),
       body: Center(
@@ -192,9 +195,11 @@ class _CreateTaskState extends State<CreateTask> {
                               vertical: 10.0, horizontal: 10.0),
                         ),
                         value: selectedUser,
-                        hint: const Text(
+                        hint: Text(
                           'Assign To',
-                          style: TextStyle(color: Colors.white),
+                          style: TextStyle(
+                              color:
+                                  Theme.of(context).colorScheme.inversePrimary),
                         ),
                         icon: Icon(Icons.arrow_drop_down,
                             color:
@@ -204,8 +209,9 @@ class _CreateTaskState extends State<CreateTask> {
                             value: user,
                             child: Text(
                               user,
-                              style: const TextStyle(
-                                  color: Colors.black, fontSize: 16.0),
+                              style: TextStyle(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  fontSize: 16.0),
                             ),
                           );
                         }).toList(),

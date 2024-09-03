@@ -42,7 +42,7 @@ class DrawerPage extends StatelessWidget {
                       size: 30,
                     ),
                     Text(
-                      "SETTINGS",
+                      "S E T T I N G S",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
@@ -69,7 +69,7 @@ class DrawerPage extends StatelessWidget {
                       size: 30,
                     ),
                     Text(
-                      "CREATE TASK",
+                      "C R E A T E T A S K",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
@@ -99,7 +99,7 @@ class DrawerPage extends StatelessWidget {
                       size: 30,
                     ),
                     Text(
-                      "LOGOUT",
+                      "L O G O U T",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,

@@ -25,8 +25,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: const LoginPage(),
-      theme: darkMode,
-      darkTheme: lightMode,
+      theme: lightMode,
+      darkTheme: darkMode,
       initialRoute: "/auth",
       routes: {
         '/home': (context) => const HomePage(),

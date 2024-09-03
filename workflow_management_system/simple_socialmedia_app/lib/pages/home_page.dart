@@ -359,13 +359,12 @@ class _HomePageState extends State<HomePage> {
             return Scaffold(
               backgroundColor: Theme.of(context).colorScheme.surface,
               appBar: AppBar(
-                foregroundColor: Colors.white,
+                foregroundColor: Theme.of(context).colorScheme.inversePrimary,
                 backgroundColor: Theme.of(context).colorScheme.primary,
                 title: const Text(
                   'View Tasks',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 22,
                   ),
                 ),
                 centerTitle: true,
@@ -509,9 +508,11 @@ class _HomePageState extends State<HomePage> {
                                           title: Center(
                                             child: Text(
                                               "${task['taskName'] ?? 'Unnamed Task'}",
-                                              style: const TextStyle(
+                                              style: TextStyle(
                                                 fontWeight: FontWeight.bold,
-                                                color: Colors.white,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .inversePrimary,
                                                 fontSize: 18,
                                               ),
                                             ),
@@ -520,14 +521,18 @@ class _HomePageState extends State<HomePage> {
                                             child: Text(
                                               task['taskDescription'] ??
                                                   'No description',
-                                              style: const TextStyle(
-                                                  color: Colors.grey,
+                                              style: TextStyle(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .secondary,
                                                   fontSize: 14),
                                             ),
                                           ),
                                         ),
                                         Divider(
-                                          color: Colors.grey.shade400,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary,
                                           thickness: 2,
                                         ),
                                         const SizedBox(height: 8.0),

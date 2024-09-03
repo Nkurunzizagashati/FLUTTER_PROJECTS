@@ -9,11 +9,10 @@ class SettingsPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        foregroundColor: Colors.white,
+        foregroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text(
-          "S E T I N G S",
+          "S E T T I N G S",
           style: TextStyle(
-            fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
         ),
