@@ -37,6 +37,9 @@ void createTask(
       return;
     } else {
       try {
+        const message = "task created for you";
+        Notifications().notify(currentUserEmail, assignedTo, message);
+
         await taskServices.createTask(
           taskName,
           taskDescription,
@@ -52,10 +55,6 @@ void createTask(
             duration: Duration(seconds: 2),
           ),
         );
-
-        const message = "task created for you";
-
-        Notifications().notify(currentUserEmail, assignedTo, message);
       } catch (error) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(

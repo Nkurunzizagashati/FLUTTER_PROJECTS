@@ -3,8 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:simple_socialmedia_app/pages/drawer_page.dart';
 import 'package:simple_socialmedia_app/pages/login_page.dart';
+import 'package:simple_socialmedia_app/providers/notification_provider.dart';
 import 'package:simple_socialmedia_app/services/auth_servces.dart';
 import 'package:simple_socialmedia_app/services/notification.dart';
 import 'package:simple_socialmedia_app/services/task_services.dart';
@@ -359,68 +361,77 @@ class _HomePageState extends State<HomePage> {
             return Scaffold(
               backgroundColor: Theme.of(context).colorScheme.surface,
               appBar: AppBar(
-                foregroundColor: Theme.of(context).colorScheme.inversePrimary,
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                title: const Text(
-                  'View Tasks',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
+                  foregroundColor: Theme.of(context).colorScheme.inversePrimary,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  title: const Text(
+                    'View Tasks',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                centerTitle: true,
-                leading: Builder(
-                  builder: (BuildContext context) {
-                    return IconButton(
-                      icon: const Icon(
-                        Icons.menu, // Hamburger menu icon
-                        size: 40.0, // Increase the size here
-                      ),
-                      onPressed: () {
-                        Scaffold.of(context).openDrawer();
-                      },
-                    );
-                  },
-                ),
-                actions: [
-                  Stack(
-                    children: [
-                      IconButton(
+                  centerTitle: true,
+                  leading: Builder(
+                    builder: (BuildContext context) {
+                      return IconButton(
                         icon: const Icon(
-                          Icons.notifications_active,
-                          size: 40,
+                          Icons.menu, // Hamburger menu icon
+                          size: 40.0, // Increase the size here
                         ),
-                        onPressed: () {},
-                      ),
-                      // StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                      //   stream: Notifications().getMyUnreadNotifications(),
-                      //   builder: (context, snapshot) {
-                      //     return Container(
-                      //       padding: const EdgeInsets.symmetric(
-                      //           horizontal: 2.0, vertical: 2.0),
-                      //       decoration: BoxDecoration(
-                      //         color: Colors.red,
-                      //         borderRadius: BorderRadius.circular(12),
-                      //       ),
-                      //       constraints: const BoxConstraints(
-                      //         minWidth: 24,
-                      //         minHeight: 24,
-                      //       ),
-                      //       child: const Center(
-                      //         child: Text(
-                      //           '2',
-                      //           style: TextStyle(
-                      //             color: Colors.white,
-                      //             fontWeight: FontWeight.bold,
-                      //           ),
-                      //         ),
-                      //       ),
-                      //     );
-                      //   },
-                      // ),
-                    ],
+                        onPressed: () {
+                          Scaffold.of(context).openDrawer();
+                        },
+                      );
+                    },
                   ),
-                ],
-              ),
+                  actions: [
+                    Stack(
+                      children: [
+                        IconButton(
+                          icon: const Icon(
+                            Icons.notifications_active,
+                            size: 40,
+                          ),
+                          onPressed: () {},
+                        ),
+                        Positioned(
+                          right: 6,
+                          top: 6,
+                          child: Consumer<NotificationsProvider>(
+                            builder: (context, notificationsProvider, child) {
+                              final notifications =
+                                  notificationsProvider.notifications;
+
+                              if (notifications.isEmpty) {
+                                return const SizedBox.shrink();
+                              }
+
+                              return Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 2.0, vertical: 2.0),
+                                decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                constraints: const BoxConstraints(
+                                  minWidth: 24,
+                                  minHeight: 24,
+                                ),
+                                child: const Center(
+                                  child: Text(
+                                    '2',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    )
+                  ]),
               drawer: const DrawerPage(),
               drawerEdgeDragWidth: 60,
               body: FutureBuilder<String?>(
