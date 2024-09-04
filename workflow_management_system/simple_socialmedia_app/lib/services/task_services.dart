@@ -19,11 +19,12 @@ class TaskServices {
     });
 
     await FirebaseFirestore.instance.collection("notifications").add({
-      'title': "A new task has been created for you",
+      'title': "A new task has been assigned to you",
       'receiverEmail': assignedTo,
       'senderEmail': creator,
       'isRead': false,
       'taskID': createdTask.id,
+      'taskName': taskName,
     });
 
     return createdTask;
@@ -41,7 +42,7 @@ class TaskServices {
       String creator,
       DateTime startDate,
       DateTime endDate) async {
-    return await FirebaseFirestore.instance
+    final updatedTask = await FirebaseFirestore.instance
         .collection("tasks")
         .doc(taskID)
         .update({
@@ -53,6 +54,17 @@ class TaskServices {
       'startDate': startDate,
       'endDate': endDate,
     });
+
+    await FirebaseFirestore.instance.collection("notifications").add({
+      'title': "A task has been updated",
+      'receiverEmail': assignedTo,
+      'senderEmail': creator,
+      'isRead': false,
+      'taskID': taskID,
+      'taskName': taskName,
+    });
+
+    return updatedTask;
   }
 
   Future<void> updateTaskCompletionStatus(String taskID, bool isCompleted) {

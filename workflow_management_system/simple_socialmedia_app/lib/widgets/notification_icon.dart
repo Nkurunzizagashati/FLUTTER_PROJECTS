@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:simple_socialmedia_app/pages/notifications_page.dart';
 
 class NotificationIcon extends StatelessWidget {
   const NotificationIcon({super.key});
@@ -18,10 +19,12 @@ class NotificationIcon extends StatelessWidget {
       builder: (context, snapshot) {
         // Default notification count to 0
         int notificationCount = 0;
+        var notificationsList;
 
         if (snapshot.hasData) {
           // Access the filtered documents from the snapshot
           final List<DocumentSnapshot> notifications = snapshot.data!.docs;
+          notificationsList = notifications;
           notificationCount = notifications.length;
         }
 
@@ -34,6 +37,17 @@ class NotificationIcon extends StatelessWidget {
               ),
               onPressed: () {
                 // Define what happens when the button is pressed
+                notificationsList.forEach((notification) => {
+                      FirebaseFirestore.instance
+                          .collection("notifications")
+                          .doc(notification.id)
+                          .update({'isRead': true})
+                    });
+
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const NotificationsPage()));
               },
             ),
             if (notificationCount > 0)
