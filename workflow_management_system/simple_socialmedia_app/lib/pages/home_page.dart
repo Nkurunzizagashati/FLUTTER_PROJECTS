@@ -10,6 +10,7 @@ import 'package:simple_socialmedia_app/providers/notification_provider.dart';
 import 'package:simple_socialmedia_app/services/auth_servces.dart';
 import 'package:simple_socialmedia_app/services/notification.dart';
 import 'package:simple_socialmedia_app/services/task_services.dart';
+import 'package:simple_socialmedia_app/widgets/notification_icon.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -383,55 +384,7 @@ class _HomePageState extends State<HomePage> {
                       );
                     },
                   ),
-                  actions: [
-                    Stack(
-                      children: [
-                        IconButton(
-                          icon: const Icon(
-                            Icons.notifications_active,
-                            size: 40,
-                          ),
-                          onPressed: () {},
-                        ),
-                        Positioned(
-                          right: 6,
-                          top: 6,
-                          child: Consumer<NotificationsProvider>(
-                            builder: (context, notificationsProvider, child) {
-                              final notifications =
-                                  notificationsProvider.notifications;
-
-                              if (notifications.isEmpty) {
-                                return const SizedBox.shrink();
-                              }
-
-                              return Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 2.0, vertical: 2.0),
-                                decoration: BoxDecoration(
-                                  color: Colors.red,
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                constraints: const BoxConstraints(
-                                  minWidth: 24,
-                                  minHeight: 24,
-                                ),
-                                child: const Center(
-                                  child: Text(
-                                    '2',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ],
-                    )
-                  ]),
+                  actions: [NotificationIcon()]),
               drawer: const DrawerPage(),
               drawerEdgeDragWidth: 60,
               body: FutureBuilder<String?>(

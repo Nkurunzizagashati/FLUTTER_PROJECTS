@@ -19,7 +19,7 @@ void main() async {
   runApp(
     ChangeNotifierProvider(
       create: (context) => NotificationsProvider(),
-      child: MyApp(),
+      child: const MyApp(),
     ),
   );
 }
