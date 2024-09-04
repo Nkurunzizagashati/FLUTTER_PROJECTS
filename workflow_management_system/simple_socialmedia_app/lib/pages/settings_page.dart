@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:simple_socialmedia_app/providers/theme_provider.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -42,10 +44,14 @@ class SettingsPage extends StatelessWidget {
                     "D A R K M O D E",
                     style: TextStyle(fontSize: 20),
                   ),
-                  CupertinoSwitch(
-                    value: true,
-                    onChanged: (value) {
-                      print("hello");
+                  Consumer<ThemeProvider>(
+                    builder: (context, themeProvider, child) {
+                      return CupertinoSwitch(
+                        value: themeProvider.isDarkMode,
+                        onChanged: (value) {
+                          themeProvider.toggleTheme();
+                        },
+                      );
                     },
                   )
                 ],

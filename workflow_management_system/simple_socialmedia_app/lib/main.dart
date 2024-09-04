@@ -8,7 +8,7 @@ import 'package:simple_socialmedia_app/pages/home_page.dart';
 import 'package:simple_socialmedia_app/pages/login_page.dart';
 import 'package:simple_socialmedia_app/pages/register_page.dart';
 import 'package:simple_socialmedia_app/pages/update_task.dart';
-import 'package:simple_socialmedia_app/providers/notification_provider.dart';
+import 'package:simple_socialmedia_app/providers/theme_provider.dart';
 import 'package:simple_socialmedia_app/themes/dark_mode.dart';
 import 'package:simple_socialmedia_app/themes/light_mode.dart';
 
@@ -18,7 +18,7 @@ void main() async {
 
   runApp(
     ChangeNotifierProvider(
-      create: (context) => NotificationsProvider(),
+      create: (context) => ThemeProvider(),
       child: const MyApp(),
     ),
   );
@@ -29,19 +29,24 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: const LoginPage(),
-      theme: lightMode,
-      darkTheme: darkMode,
-      initialRoute: "/auth",
-      routes: {
-        '/home': (context) => const HomePage(),
-        '/auth': (context) => const AuthPage(),
-        '/login': (context) => const LoginPage(),
-        '/register': (context) => const RegisterPage(),
-        '/create-task': (context) => const CreateTask(),
-        '/update-task': (context) => const UpdateTask(),
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, child) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: lightMode,
+          darkTheme: darkMode,
+          themeMode: themeProvider
+              .getThemeMode, // Set the theme mode based on the provider
+          initialRoute: "/auth",
+          routes: {
+            '/home': (context) => const HomePage(),
+            '/auth': (context) => const AuthPage(),
+            '/login': (context) => const LoginPage(),
+            '/register': (context) => const RegisterPage(),
+            '/create-task': (context) => const CreateTask(),
+            '/update-task': (context) => const UpdateTask(),
+          },
+        );
       },
     );
   }
