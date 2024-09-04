@@ -8,7 +8,8 @@ class TaskServices {
       String creator,
       DateTime startDate,
       DateTime endDate) async {
-    return await FirebaseFirestore.instance.collection("tasks").add({
+    final createdTask =
+        await FirebaseFirestore.instance.collection("tasks").add({
       'taskName': taskName,
       'taskDescription': taskDescription,
       'assignedTo': assignedTo,
@@ -16,6 +17,16 @@ class TaskServices {
       'startDate': startDate,
       'endDate': endDate,
     });
+
+    await FirebaseFirestore.instance.collection("notifications").add({
+      'title': "A new task has been created for you",
+      'receiverEmail': assignedTo,
+      'senderEmail': creator,
+      'isRead': false,
+      'taskID': createdTask.id,
+    });
+
+    return createdTask;
   }
 
   Stream<QuerySnapshot<Map<String, dynamic>>> getTasksStream() {
