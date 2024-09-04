@@ -1,12 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 import 'package:simple_socialmedia_app/pages/drawer_page.dart';
 import 'package:simple_socialmedia_app/pages/login_page.dart';
-import 'package:simple_socialmedia_app/providers/notification_provider.dart';
 import 'package:simple_socialmedia_app/services/auth_servces.dart';
 import 'package:simple_socialmedia_app/services/notification.dart';
 import 'package:simple_socialmedia_app/services/task_services.dart';
@@ -89,7 +86,7 @@ class _HomePageState extends State<HomePage> {
             const SnackBar(
               content: Center(
                 child: Text(
-                  "Task created successfully!",
+                  "Task edited successfully!",
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -151,7 +148,33 @@ class _HomePageState extends State<HomePage> {
       initialDate: DateTime.now(),
       firstDate: DateTime(2000),
       lastDate: DateTime(2101),
+      barrierColor:
+          Colors.black.withOpacity(0.5), // Customize the barrier color
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            colorScheme: ColorScheme.light(
+              primary: Colors.blue.shade300, // Header background color
+              onPrimary: Colors.white, // Header text color
+              onSurface: Colors.black, // Text color of the days
+            ),
+            dialogBackgroundColor:
+                Colors.white, // Background color of the dialog
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.blue, // Button text color
+                textStyle: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
+
     if (picked != null) {
       setState(() {
         deadlineController.text = "${picked.toLocal()}".split(' ')[0];
@@ -165,6 +188,31 @@ class _HomePageState extends State<HomePage> {
       initialDate: DateTime.now(),
       firstDate: DateTime(2000),
       lastDate: DateTime(2101),
+      barrierColor:
+          Colors.black.withOpacity(0.5), // Customize the barrier color
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            colorScheme: ColorScheme.light(
+              primary: Colors.blue.shade300, // Header background color
+              onPrimary: Colors.white, // Header text color
+              onSurface: Colors.black, // Text color of the days
+            ),
+            dialogBackgroundColor:
+                Colors.white, // Background color of the dialog
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                  foregroundColor: Colors.blue,
+                  textStyle: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ) // Button text color
+                  ),
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
     if (picked != null) {
       setState(() {
