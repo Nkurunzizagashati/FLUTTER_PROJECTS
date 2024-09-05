@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "749804359648",
+    "project_id": "workflow-management-soft-19fe2",
+    "storage_bucket": "workflow-management-soft-19fe2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:749804359648:android:9eab840217fb9cd5b3a585",
+        "android_client_info": {
+          "package_name": "com.example.workflow_management_software"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtO9HqqCYyOdOOoEYD9PKOeBI0UaOZFrY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
